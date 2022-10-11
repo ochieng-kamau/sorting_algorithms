@@ -1,74 +1,89 @@
 #include "sort.h"
-#include <stdio.h>
+
 /**
- * quick_sort - sorts an array of integers in ascending order
- * using the quick sort sort algorithm
- * @array: pointer to the array
- * @size: size of the array
-*/
-void quick_sort(int *array, size_t size)
+ * swap - swaps two numbers
+ * @num1: first number
+ * @num2: second number
+ */
+void swap(int *num1, int *num2)
 {
-recursive_quick_sort(array, size, 0, size - 1);
+	int tmp = *num1;
+	*num1 = *num2;
+	*num2 = tmp;
 }
 
 /**
- * recursive_quick_sort - recursive part
- * @array: array to use
- * @size: size
- * @start: start index
- * @end: end index
-*/
-void recursive_quick_sort(int *array, size_t size, int start, int end)
+ * partition - find partiton position
+ * @array: array of integer
+ * @low: lower bound of array
+ * @high: higher bound of array
+ * @size: number of elements in @array
+ *
+ * Return: position of pivot
+ */
+int partition(int *array, int low, int high, size_t size)
 {
-int p;
-if (start < end)
-{
-	p = partition(array, size, start, end);
-
-	recursive_quick_sort(array, size, start, p - 1);
-	recursive_quick_sort(array, size, p + 1, end);
-}
-
-}
-
-/**
- * partition - partition the array
- * @array: array to use
- * @size: size
- * @start: start index
- * @end: end index
- * Return: partition index
-*/
-size_t partition(int *array, size_t size, int start, int end)
-{
-int pivot = array[end];
-int i = start - 1;
-int j;
-
-for (j = start; j <= end - 1; j++)
-{
-	if (array[j] < pivot)
+	/* select the rightmost element as pivot */
+	int pivot = array[high];
+	/* pointer for greater element */
+	int ptr = low;
+	int j;
+	/*
+	 *traverse across each element in array and
+	 *compare them with pivot
+	 */
+	for (j = low; j < high; j++)
 	{
-		i++;
-		swap_int1(array, i, j);
+		if (array[j] <= pivot)
+		{
+			if (ptr != j)
+			{
+				/*
+				 * if element smaller than pivot is found
+				 *swap it with the greater element pointed by i
+				 */
+				swap(&array[ptr], &array[j]);
+				print_array(array, size);
+			}
+			ptr++;
+		}
+	}
+	/* swap the pivot element with the greater element at i */
+	if (ptr != high)
+	{
+		swap(&array[ptr], &array[high]);
 		print_array(array, size);
 	}
-}
-swap_int1(array, i + 1, end);
-print_array(array, size);
-return (i+1);
+	return (ptr);
 }
 
 /**
- * swap_int1 - swap variable values
- * @array: array to use
- * @a: index 1
- * @b: index 2
-*/
-void swap_int1(int *array, int a, int b)
+ * quicksort - quick sort with recursion
+ * @array: array of integer
+ * @low: lower bound of array
+ * @high: higher bound of array
+ * @size: number of elements in @array
+ */
+void quicksort(int *array, int low, int high, size_t size)
 {
-int tmp;
-tmp = array[a];
-array[a] = array[b];
-array[b] = tmp;
+	int pivot;
+
+	if (low < high)
+	{
+		pivot = partition(array, low, high, size);
+		quicksort(array, low, pivot - 1, size);
+		quicksort(array, pivot + 1, high, size);
+	}
+}
+
+/**
+ * quick_sort - quick sorts an array
+ * @array: array to sort
+ * @size: size of array
+ */
+void quick_sort(int *array, size_t size)
+{
+	if (array == NULL || size < 2)
+		return;
+	quicksort(array, 0, size - 1, size);
 }
